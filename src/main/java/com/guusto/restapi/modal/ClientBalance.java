@@ -8,7 +8,7 @@ public class ClientBalance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long client_balance_id;
+    private int client_balance_id;
 
     @Column(name = "balance")
     private double balance;
@@ -17,11 +17,11 @@ public class ClientBalance {
     @JoinColumn(name = "id", nullable = false)
     private Client client;
 
-    public long getClient_balance_id() {
+    public int getClient_balance_id() {
         return client_balance_id;
     }
 
-    public void setClient_balance_id(long client_balance_id) {
+    public void setClient_balance_id(int client_balance_id) {
         this.client_balance_id = client_balance_id;
     }
 

@@ -9,7 +9,50 @@
 			"name": "GET-Client",
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": {
+					"raw": "localhost:8085/api/v1/guusto-service/clients",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"v1",
+						"guusto-service",
+						"clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buy-Gift",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"client_id\":1,\r\n    \"amount\":100,\r\n    \"quantity\":2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8085/api/v1/guusto-service/buy-gift",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"v1",
+						"guusto-service",
+						"buy-gift"
+					]
+				}
 			},
 			"response": []
 		}

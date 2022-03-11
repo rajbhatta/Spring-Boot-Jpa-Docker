@@ -15,7 +15,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8085")
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/guusto-service")
 public class ClientController {
 
     @Autowired
