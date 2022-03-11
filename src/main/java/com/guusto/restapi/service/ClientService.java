@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClientService {
@@ -18,6 +19,14 @@ public class ClientService {
         List<Client> clientsList = new ArrayList<Client>();
         clientRepository.findAll().forEach(client -> clientsList.add(client));
         return clientsList;
+    }
+
+    public Client getClientById(int clientId){
+        Optional<Client> clientOptional= clientRepository.findById(clientId);
+        if (clientOptional.isPresent()){
+            return clientOptional.get();
+        }
+        return null;
     }
 
 }
