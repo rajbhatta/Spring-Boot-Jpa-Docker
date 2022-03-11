@@ -13,6 +13,7 @@ public class GiftPurchaseValidationService implements ValidationService<Buygift>
 
     @Override
     public boolean checkBalance(Buygift buygift) {
+        /*
         ClientBalance clientBalance = clientBalanceService.getBalanceById(buygift.getClientId());
         if (Double.compare(clientBalance.getBalance(), buygift.getAmount()) == 0) {
             return false;
@@ -21,10 +22,13 @@ public class GiftPurchaseValidationService implements ValidationService<Buygift>
         } else {
             return true;
         }
+         */
+        return  true;
     }
 
     @Override
     public boolean checkBalanceWithQuantity(Buygift buygift) {
+        /*
         ClientBalance clientBalance = clientBalanceService.getBalanceById(buygift.getClientId());
         double totalCost = buygift.getAmount() * buygift.getQuantity();
 
@@ -34,7 +38,8 @@ public class GiftPurchaseValidationService implements ValidationService<Buygift>
             return false;
         } else {
             return true;
-        }
+        }*/
+        return false;
     }
 
 

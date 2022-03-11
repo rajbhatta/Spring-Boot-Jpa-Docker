@@ -3,13 +3,15 @@ package com.guusto.restapi.modal;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Buygift implements Serializable {
 
     @JsonProperty(value="client_id")
     private int clientId;
-    private double amount;
-    private int quantity;
+
+    @JsonProperty(value="purchase")
+    private List<TotalPurchase> totalPurchase;
 
     public int getClientId() {
         return clientId;
@@ -19,19 +21,11 @@ public class Buygift implements Serializable {
         this.clientId = clientId;
     }
 
-    public double getAmount() {
-        return amount;
+    public List<TotalPurchase> getTotalPurchase() {
+        return totalPurchase;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setTotalPurchase(List<TotalPurchase> totalPurchase) {
+        this.totalPurchase = totalPurchase;
     }
 }
