@@ -17,9 +17,6 @@ public class ClientTranaction {
     @Column(name="amount")
     private double amount;
 
-    @Column(name="balance")
-    private double balance;
-
     @Column(name="remindBalance")
     private double remindBalance;
 
@@ -29,6 +26,17 @@ public class ClientTranaction {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id", nullable = false)
     private Client client;
+
+    public ClientTranaction() {
+    }
+
+    public ClientTranaction(int quantity, double amount, double remindBalance, int gift, Client client) {
+        this.quantity = quantity;
+        this.amount = amount;
+        this.remindBalance = remindBalance;
+        this.gift = gift;
+        this.client = client;
+    }
 
     public int getClientTransactionId() {
         return clientTransactionId;
@@ -52,14 +60,6 @@ public class ClientTranaction {
 
     public void setAmount(double amount) {
         this.amount = amount;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(double balance) {
-        this.balance = balance;
     }
 
     public double getRemindBalance() {
