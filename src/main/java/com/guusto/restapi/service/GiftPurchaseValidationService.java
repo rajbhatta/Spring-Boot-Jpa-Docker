@@ -40,7 +40,7 @@ public class GiftPurchaseValidationService implements ValidationService<Purchase
         }
     }
 
-    public boolean checkBalanceWithQuantity(double totalBalance, double purchaseAmount) {
+    public boolean checkBalanceWithAmount(double totalBalance, double purchaseAmount) {
         if (Double.compare(totalBalance, purchaseAmount) == 0) {
             return false;
         } else if (Double.compare(totalBalance, purchaseAmount) < 0) {
