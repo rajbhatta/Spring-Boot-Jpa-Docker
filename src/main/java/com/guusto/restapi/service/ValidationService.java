@@ -8,4 +8,5 @@ package com.guusto.restapi.service;
 public interface ValidationService<T,U> {
     public boolean checkBalance(T t, U u);
     public boolean checkBalanceWithQuantity(T t, U u);
+    public boolean checkBalanceWithAmount(double totalBalance, double purchaseAmount);
 }

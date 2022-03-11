@@ -16,6 +16,7 @@ public class ClientGiftTransactionService implements GiftService<Gift> {
     @Autowired
     ClientBalanceService clientBalanceService;
 
+
     @Autowired
     ClientTransactionRepository clientTransactionRepository;
 
@@ -23,20 +24,6 @@ public class ClientGiftTransactionService implements GiftService<Gift> {
     ClientService clientService;
 
     private static int generatedId = 0;
-
-    public int writeTransactionLedger(ClientTranaction clientTranaction) {
-        clientTransactionRepository.save(clientTranaction);
-        return clientTranaction.getClientTransactionId();
-    }
-
-    public ClientTranaction provideLastInsertedClientTransactionRecord(int clientTransactionId) {
-        Optional<ClientTranaction> clientTranactionOptional = clientTransactionRepository.findById(clientTransactionId);
-        if (clientTranactionOptional.isPresent()) {
-            return clientTranactionOptional.get();
-        }
-        return null;
-    }
-
 
     @Override
     public void processGiftTransaction(Gift gift) {
@@ -50,36 +37,41 @@ public class ClientGiftTransactionService implements GiftService<Gift> {
         ClientBalance clientBalance = clientBalanceService.getBalanceById(gift.getClientId());
         Client client = clientService.getClientById(gift.getClientId());
 
-        /**
-         * First round generatedId will be 0. Thus, client balance is checked with amount*quantity.
-         */
-        if (generatedId == 0) {
-            if (checkBalanceWithQuantity(clientBalance.getBalance(), purchase.getAmount() * purchase.getQuantity())) {
-                double dueAmount = (clientBalance.getBalance() - purchase.getAmount() * purchase.getQuantity());
-                ClientTranaction clientTranaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), dueAmount, purchase.getQuantity(), client);
-                generatedId = writeTransactionLedger(clientTranaction);
-            }
-        } else {
+        if (clientBalance != null) {
             /**
-             *
+             * First round generatedId will be 0. Thus, client balance is checked with amount*quantity.
              */
-            double remainingClientBalance = provideLastInsertedClientTransactionRecord(generatedId).getRemindBalance();
-            double newDueAmount = (remainingClientBalance - purchase.getAmount() * purchase.getQuantity());
-            if (checkBalanceWithQuantity(remainingClientBalance, purchase.getAmount() * purchase.getQuantity())) {
-                ClientTranaction clientTranaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), newDueAmount, purchase.getQuantity(), client);
-                generatedId = writeTransactionLedger(clientTranaction);
+            if (generatedId == 0) {
+                if (giftPurchaseValidationService.checkBalanceWithAmount(clientBalance.getBalance(), purchase.getAmount() * purchase.getQuantity())) {
+                    double dueAmount = (clientBalance.getBalance() - purchase.getAmount() * purchase.getQuantity());
+                    ClientTranaction clientTranaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), dueAmount, purchase.getQuantity(), client);
+                    generatedId = writeTransactionLedger(clientTranaction);
+                }
+            } else {
+                /**
+                 *
+                 */
+                double remainingClientBalance = provideLastInsertedClientTransactionRecord(generatedId).getRemindBalance();
+                double newDueAmount = (remainingClientBalance - purchase.getAmount() * purchase.getQuantity());
+                if (giftPurchaseValidationService.checkBalanceWithAmount(remainingClientBalance, purchase.getAmount() * purchase.getQuantity())) {
+                    ClientTranaction clientTranaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), newDueAmount, purchase.getQuantity(), client);
+                    generatedId = writeTransactionLedger(clientTranaction);
+                }
             }
         }
-
     }
 
-    public boolean checkBalanceWithQuantity(double totalBalance, double purchaseAmount) {
-        if (Double.compare(totalBalance, purchaseAmount) == 0) {
-            return false;
-        } else if (Double.compare(totalBalance, purchaseAmount) < 0) {
-            return false;
-        } else {
-            return true;
+    private ClientTranaction provideLastInsertedClientTransactionRecord(int clientTransactionId) {
+        Optional<ClientTranaction> clientTranactionOptional = clientTransactionRepository.findById(clientTransactionId);
+        if (clientTranactionOptional.isPresent()) {
+            return clientTranactionOptional.get();
         }
+        return null;
     }
+
+    private int writeTransactionLedger(ClientTranaction clientTranaction) {
+        clientTransactionRepository.save(clientTranaction);
+        return clientTranaction.getClientTransactionId();
+    }
+
 }
