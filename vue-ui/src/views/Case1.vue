@@ -49,7 +49,7 @@ export default {
   methods: {
     submitForm() {
       this.body.purchase.push(this.purchaseObj)
-      axios.post('localhost:8085/api/v1/guusto-service/buy-gift', this.body)
+      axios.post(`${process.env.VUE_APP_API_URL}/api/v1/guusto-service/buy-gift`, this.body)
                  .then((res) => {
                     console.log(res)
                  })
