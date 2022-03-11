@@ -25,19 +25,6 @@ public class ClientGiftTransactionService implements GiftService<Gift> {
 
     private static int generatedId = 0;
 
-    public int writeTransactionLedger(ClientTranaction clientTranaction) {
-        clientTransactionRepository.save(clientTranaction);
-        return clientTranaction.getClientTransactionId();
-    }
-
-    public ClientTranaction provideLastInsertedClientTransactionRecord(int clientTransactionId) {
-        Optional<ClientTranaction> clientTranactionOptional = clientTransactionRepository.findById(clientTransactionId);
-        if (clientTranactionOptional.isPresent()) {
-            return clientTranactionOptional.get();
-        }
-        return null;
-    }
-
     @Override
     public void processGiftTransaction(Gift gift) {
         gift.getTotalPurchase().stream().forEach((purchase) -> {
@@ -72,6 +59,19 @@ public class ClientGiftTransactionService implements GiftService<Gift> {
                 }
             }
         }
+    }
+
+    private ClientTranaction provideLastInsertedClientTransactionRecord(int clientTransactionId) {
+        Optional<ClientTranaction> clientTranactionOptional = clientTransactionRepository.findById(clientTransactionId);
+        if (clientTranactionOptional.isPresent()) {
+            return clientTranactionOptional.get();
+        }
+        return null;
+    }
+
+    private int writeTransactionLedger(ClientTranaction clientTranaction) {
+        clientTransactionRepository.save(clientTranaction);
+        return clientTranaction.getClientTransactionId();
     }
 
 }
