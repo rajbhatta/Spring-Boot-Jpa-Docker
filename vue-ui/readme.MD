@@ -1,4 +1,4 @@
-## 1. Form Posting UI ##
+## Case 1. Form posting to API server ##
 ```js
 <template>
   <div class="about">
@@ -34,7 +34,6 @@
 </template>
 <script>
 import axios from 'axios';
-
 export default {
   data() {
     return {
@@ -50,8 +49,8 @@ export default {
   },
   methods: {
     submitForm() {
-      this.form.purchase.push(this.purchaseObj)
-      axios.post('localhost:8085/api/v1/guusto-service/buy-gift', this.body)
+      this.body.purchase.push(this.purchaseObj)
+      axios.post(`${process.env.VUE_APP_API_URL}/api/v1/guusto-service/buy-gift`, this.body)
                  .then((res) => {
                     console.log(res)
                  })
