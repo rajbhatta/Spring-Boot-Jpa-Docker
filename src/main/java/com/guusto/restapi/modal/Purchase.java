@@ -2,7 +2,7 @@ package com.guusto.restapi.modal;
 
 import java.io.Serializable;
 
-public class TotalPurchase implements Serializable {
+public class Purchase implements Serializable {
     private double amount;
     private int quantity;
 

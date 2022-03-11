@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.List;
 
-public class Buygift implements Serializable {
+public class Gift implements Serializable {
 
     @JsonProperty(value="client_id")
     private int clientId;
 
     @JsonProperty(value="purchase")
-    private List<TotalPurchase> totalPurchase;
+    private List<Purchase> totalPurchase;
 
     public int getClientId() {
         return clientId;
@@ -21,11 +21,11 @@ public class Buygift implements Serializable {
         this.clientId = clientId;
     }
 
-    public List<TotalPurchase> getTotalPurchase() {
+    public List<Purchase> getTotalPurchase() {
         return totalPurchase;
     }
 
-    public void setTotalPurchase(List<TotalPurchase> totalPurchase) {
+    public void setTotalPurchase(List<Purchase> totalPurchase) {
         this.totalPurchase = totalPurchase;
     }
 }
