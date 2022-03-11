@@ -1,5 +1,5 @@
 package com.guusto.restapi.service;
 
-public interface GiftService {
-
+public interface GiftService<T> {
+   public void processGiftTransaction(T t);
 }

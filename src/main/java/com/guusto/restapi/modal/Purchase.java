@@ -1,21 +1,10 @@
 package com.guusto.restapi.modal;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 
-public class Buygift {
-
-    @JsonProperty(value="client_id")
-    private int clientId;
+public class Purchase implements Serializable {
     private double amount;
     private int quantity;
-
-    public long getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(int clientId) {
-        this.clientId = clientId;
-    }
 
     public double getAmount() {
         return amount;
