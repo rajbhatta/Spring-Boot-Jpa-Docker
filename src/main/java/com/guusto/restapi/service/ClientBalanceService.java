@@ -1,5 +1,6 @@
 package com.guusto.restapi.service;
 
+import com.guusto.restapi.exception.ClientBalanceException;
 import com.guusto.restapi.modal.Client;
 import com.guusto.restapi.modal.ClientBalance;
 import com.guusto.restapi.repository.ClientBalanceRepository;
@@ -22,12 +23,12 @@ public class ClientBalanceService {
         return clientBalanceList;
     }
 
-    public ClientBalance getBalanceById(int clientId){
+    public ClientBalance getBalanceById(int clientId) throws ClientBalanceException {
         Optional<ClientBalance> clientOptional= clientBalanceRepository.findById(clientId);
         if (clientOptional.isPresent()){
             return clientOptional.get();
         }
-        return null;
+       throw new ClientBalanceException("UNABLE TO GET BALANCE ID for ["+clientId+"]");
     }
 
 }

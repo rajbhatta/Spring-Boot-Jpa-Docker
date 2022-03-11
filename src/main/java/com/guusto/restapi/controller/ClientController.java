@@ -1,5 +1,6 @@
 package com.guusto.restapi.controller;
 
+import com.guusto.restapi.exception.ClientException;
 import com.guusto.restapi.modal.Client;
 import com.guusto.restapi.repository.ClientRepository;
 import com.guusto.restapi.service.ClientService;
@@ -28,10 +29,11 @@ public class ClientController {
 
     @GetMapping("/clients/{id}")
     public ResponseEntity<Client> getClientById(@PathVariable("id") int id) {
-        Client client=clientService.getClientById(id);
-        if (client ==null) {
+        try {
+            Client client = clientService.getClientById(id);
+            return new ResponseEntity<>(client, HttpStatus.OK);
+        } catch (ClientException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(client, HttpStatus.OK);
     }
 }

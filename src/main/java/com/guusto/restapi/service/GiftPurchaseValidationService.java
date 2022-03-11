@@ -1,5 +1,6 @@
 package com.guusto.restapi.service;
 
+import com.guusto.restapi.exception.ClientBalanceException;
 import com.guusto.restapi.modal.ClientBalance;
 import com.guusto.restapi.modal.Gift;
 import com.guusto.restapi.modal.Purchase;
@@ -13,7 +14,7 @@ public class GiftPurchaseValidationService implements ValidationService<Purchase
     ClientBalanceService clientBalanceService;
 
     @Override
-    public boolean checkBalance(Purchase purchase, Integer clientId) {
+    public boolean checkBalance(Purchase purchase, Integer clientId) throws ClientBalanceException {
 
         ClientBalance clientBalance = clientBalanceService.getBalanceById(clientId);
         if (Double.compare(clientBalance.getBalance(), purchase.getAmount()) == 0) {
@@ -26,7 +27,7 @@ public class GiftPurchaseValidationService implements ValidationService<Purchase
     }
 
     @Override
-    public boolean checkBalanceWithQuantity(Purchase purchase, Integer clientId) {
+    public boolean checkBalanceWithQuantity(Purchase purchase, Integer clientId) throws ClientBalanceException {
 
         ClientBalance clientBalance = clientBalanceService.getBalanceById(clientId);
         double totalCost = purchase.getAmount() * purchase.getQuantity();

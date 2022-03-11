@@ -1,5 +1,6 @@
 package com.guusto.restapi.service;
 
+import com.guusto.restapi.exception.ClientException;
 import com.guusto.restapi.modal.Client;
 import com.guusto.restapi.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,12 @@ public class ClientService {
         return clientsList;
     }
 
-    public Client getClientById(int clientId){
+    public Client getClientById(int clientId) throws ClientException {
         Optional<Client> clientOptional= clientRepository.findById(clientId);
         if (clientOptional.isPresent()){
             return clientOptional.get();
         }
-        return null;
+        throw new ClientException("UNABLE TO GET CLIENT BY ["+clientId+"]");
     }
 
 }

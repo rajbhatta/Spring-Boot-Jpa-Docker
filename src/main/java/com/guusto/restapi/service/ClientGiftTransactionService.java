@@ -1,5 +1,8 @@
 package com.guusto.restapi.service;
 
+import com.guusto.restapi.exception.ClientBalanceException;
+import com.guusto.restapi.exception.ClientException;
+import com.guusto.restapi.exception.GiftCardException;
 import com.guusto.restapi.modal.*;
 import com.guusto.restapi.repository.ClientTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +29,22 @@ public class ClientGiftTransactionService implements GiftService<Gift> {
     private static int generatedId = 0;
 
     @Override
-    public void processGiftTransaction(Gift gift) {
-        gift.getTotalPurchase().stream().forEach((purchase) -> {
-            processPurchase(purchase, gift);
-        });
+    public void processGiftTransaction(Gift gift) throws GiftCardException {
+        try{
+            gift.getTotalPurchase().stream().forEach((purchase) -> {
+                try {
+                    processPurchase(purchase, gift);
+                } catch (ClientBalanceException | ClientException e) {
+                    e.printStackTrace();
+                }
+            });
+        }catch (Exception ex){
+            throw new GiftCardException("UNABLE TO PROCESS GIFT CARD FOR ["+gift.getClientId()+"]");
+        }
+
     }
 
-    private void processPurchase(Purchase purchase, Gift gift) {
+    private void processPurchase(Purchase purchase, Gift gift) throws ClientBalanceException, ClientException {
 
         ClientBalance clientBalance = clientBalanceService.getBalanceById(gift.getClientId());
         Client client = clientService.getClientById(gift.getClientId());
