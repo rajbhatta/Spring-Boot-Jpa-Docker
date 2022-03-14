@@ -54,8 +54,6 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
             gift.getTotalPurchase().stream().forEach((purchase) -> {
                 try {
                     processPurchase(purchase, gift, transactionCounter, linkedHashMap, clientBalance, client);
-
-
                 } catch (ClientBalanceException | ClientException e) {
                     e.printStackTrace();
                 }
@@ -110,7 +108,7 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
     }
 
     public double getLastTransactionRecordBalanceById(int clientId){
-        //todo: get transaction records by clientId and get latest record by created_at.
+        //todo: get all transaction records by clientId and get last record by created_at.
        return 0;
     }
 

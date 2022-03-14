@@ -19,11 +19,11 @@ public class GiftcardController {
     @Autowired
     GiftPurchaseValidationService giftPurchaseValidationService;
 
-    //@Autowired
-    //ClientGiftTransactionService clientGiftTransactionService;
-
     @Autowired
-    ClientGiftTransactionServiceV2 clientGiftTransactionService;
+    ClientGiftTransactionService clientGiftTransactionService;
+
+    //@Autowired
+    //ClientGiftTransactionServiceV2 clientGiftTransactionService;
 
     @PostMapping("/buy-gift")
     public ResponseEntity<Gift> buyGift(@RequestBody Gift gift) {
