@@ -1,11 +1,17 @@
 package com.guusto.restapi.modal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
 @Table(name = "tbl_client_transaction")
-public class ClientTranaction {
+public class ClientTranaction implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +29,15 @@ public class ClientTranaction {
     @Column(name="gift")
     private int gift;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id", nullable = false)
     private Client client;
+
+    @Column(name="created_at",nullable = false, updatable = false)
+    @CreationTimestamp
+    private Date created_at;
+
 
     public ClientTranaction() {
     }
@@ -84,5 +96,13 @@ public class ClientTranaction {
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    public Date getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
     }
 }
