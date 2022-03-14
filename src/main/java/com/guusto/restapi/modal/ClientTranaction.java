@@ -36,7 +36,7 @@ public class ClientTranaction implements Serializable {
 
     @Column(name="created_at",nullable = false, updatable = false)
     @CreationTimestamp
-    private Date created_at;
+    private Date createdAt;
 
 
     public ClientTranaction() {
@@ -98,11 +98,11 @@ public class ClientTranaction implements Serializable {
         this.client = client;
     }
 
-    public Date getCreated_at() {
-        return created_at;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }
