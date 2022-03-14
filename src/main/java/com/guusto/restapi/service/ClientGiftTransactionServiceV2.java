@@ -47,18 +47,27 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
             HashMap<String, ClientTranaction> linkedHashMap = new LinkedHashMap<>();
             Client client = clientService.getClientById(gift.getClientId());
 
-            ClientBalance clientBalance = clientBalanceService.getBalanceById(gift.getClientId());
+            //If previous transaction is detected then get value from transaction table.
+            double clientBalance = getLatestClientBalance(gift.getClientId());
+
 
             gift.getTotalPurchase().stream().forEach((purchase) -> {
                 try {
                     processPurchase(purchase, gift, transactionCounter, linkedHashMap, clientBalance, client);
+
+
                 } catch (ClientBalanceException | ClientException e) {
                     e.printStackTrace();
                 }
             });
+
+            //write map to database as a batch
+            writeTransactionLedgerBatch(linkedHashMap);
+
         } catch (Exception ex) {
             throw new GiftCardException("UNABLE TO PROCESS GIFT CARD FOR [" + gift.getClientId() + "]");
         }
+
 
     }
 
@@ -66,16 +75,15 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
                                  Gift gift,
                                  int transactionCounter,
                                  HashMap<String, ClientTranaction> mapClient,
-                                 ClientBalance clientBalance,
+                                 double clientBalance,
                                  Client client) throws ClientBalanceException, ClientException {
 
         ClientTranaction processedClientTransaction = getLastRecordFromHashMap(mapClient);
         if (processedClientTransaction == null) {
             //Validate balance
-            if (giftPurchaseValidationService.checkBalanceWithAmount(clientBalance.getBalance(), purchase.getAmount() * purchase.getQuantity())) {
-                double remindBalance = clientBalance.getBalance() - purchase.getQuantity() * purchase.getAmount();
+            if (giftPurchaseValidationService.checkBalanceWithAmount(clientBalance, purchase.getAmount() * purchase.getQuantity())) {
+                double remindBalance = clientBalance - purchase.getQuantity() * purchase.getAmount();
                 ClientTranaction clientTranaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client);
-                writeTransactionLedger(clientTranaction);
                 mapClient.put("tranasction"+transactionCounter, new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client));
 
             }
@@ -84,7 +92,6 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
             //validate balance
             if (giftPurchaseValidationService.checkBalanceWithAmount(remindBalance, purchase.getAmount() * purchase.getQuantity())) {
                 ClientTranaction clientTranaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client);
-                writeTransactionLedger(clientTranaction);
                 mapClient.put("tranasction"+transactionCounter, new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client));
 
             }
@@ -102,13 +109,33 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
         return null;
     }
 
-    public ClientTranaction getLastTransactionRecordById(int clientId){
-      return null;
+    public double getLastTransactionRecordBalanceById(int clientId){
+        //todo: get transaction records by clientId and get latest record by created_at.
+       return 0;
+    }
+
+    private Double getLatestClientBalance(int clientId) throws ClientBalanceException {
+        Double lastTransactionAmount = getLastTransactionRecordBalanceById(clientId);
+        if (lastTransactionAmount == null){
+            //If no transaction then return from client balance table
+            ClientBalance clientBalance =  clientBalanceService.getBalanceById(clientId);
+            return  clientBalance.getBalance();
+        }else {
+            return lastTransactionAmount;
+        }
+
     }
 
     private int writeTransactionLedger(ClientTranaction clientTranaction) {
         clientTransactionRepository.save(clientTranaction);
         return clientTranaction.getClientTransactionId();
+    }
+
+    private void writeTransactionLedgerBatch(HashMap<String, ClientTranaction> linkedHashMap){
+        for (var entry : linkedHashMap.entrySet()) {
+            ClientTranaction clientTranaction = entry.getValue();
+            clientTransactionRepository.save(clientTranaction);
+        }
     }
 
 }

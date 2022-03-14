@@ -36,15 +36,4 @@ public class GiftcardController {
 
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<ClientTranaction> testRecordById() {
-        try {
-           ClientTranaction clientTranaction = clientGiftTransactionService.getLastTransactionRecordById(1);
-            return new ResponseEntity<>(clientTranaction, HttpStatus.OK);
-        }catch (Exception ee){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-
-    }
-
 }
