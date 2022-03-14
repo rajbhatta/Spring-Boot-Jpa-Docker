@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -47,9 +44,7 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
             HashMap<String, ClientTranaction> linkedHashMap = new LinkedHashMap<>();
             Client client = clientService.getClientById(gift.getClientId());
 
-            //If previous transaction is detected then get value from transaction table.
-            double clientBalance = getLatestClientBalance(gift.getClientId());
-
+            double clientBalance = getLatestClientBalance(client);
 
             gift.getTotalPurchase().stream().forEach((purchase) -> {
                 try {
@@ -60,7 +55,7 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
             });
 
             //write map to database as a batch
-            writeTransactionLedgerBatch(linkedHashMap);
+            //writeTransactionLedgerBatch(linkedHashMap);
 
         } catch (Exception ex) {
             throw new GiftCardException("UNABLE TO PROCESS GIFT CARD FOR [" + gift.getClientId() + "]");
@@ -81,17 +76,17 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
             //Validate balance
             if (giftPurchaseValidationService.checkBalanceWithAmount(clientBalance, purchase.getAmount() * purchase.getQuantity())) {
                 double remindBalance = clientBalance - purchase.getQuantity() * purchase.getAmount();
-                ClientTranaction clientTranaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client);
-                mapClient.put("tranasction"+transactionCounter, new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client));
-
+                ClientTranaction clientTransaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client);
+                mapClient.put("transaction"+transactionCounter, new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client));
+                writeTransactionLedger(clientTransaction);
             }
         } else {
             double remindBalance = processedClientTransaction.getRemindBalance() - purchase.getQuantity() * purchase.getAmount();
             //validate balance
             if (giftPurchaseValidationService.checkBalanceWithAmount(remindBalance, purchase.getAmount() * purchase.getQuantity())) {
-                ClientTranaction clientTranaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client);
-                mapClient.put("tranasction"+transactionCounter, new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client));
-
+                ClientTranaction clientTransaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client);
+                mapClient.put("transaction"+transactionCounter, new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client));
+                writeTransactionLedger(clientTransaction);
             }
         }
     }
@@ -107,19 +102,26 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
         return null;
     }
 
-    public double getLastTransactionRecordBalanceById(int clientId){
-        //todo: get all transaction records by clientId and get last record by created_at.
-       return 0;
+    public ClientTranaction getLastTransactionRecordByClient(Client client){
+        List<ClientTranaction> clientTransactionsList = clientTransactionRepository.findByClient(client);
+        if (clientTransactionsList.size() >=1){
+            //Last record contains the latest transaction value
+            return clientTransactionsList.get(clientTransactionsList.size()-1);
+        }
+        return null;
     }
 
-    private Double getLatestClientBalance(int clientId) throws ClientBalanceException {
-        Double lastTransactionAmount = getLastTransactionRecordBalanceById(clientId);
-        if (lastTransactionAmount == null){
+    private Double getLatestClientBalance(Client client) throws ClientBalanceException {
+
+        //If previous transaction is detected then get value from transaction table.
+        ClientTranaction clientTransactionRecord = getLastTransactionRecordByClient(client);
+
+        if (clientTransactionRecord == null){
             //If no transaction then return from client balance table
-            ClientBalance clientBalance =  clientBalanceService.getBalanceById(clientId);
+            ClientBalance clientBalance =  clientBalanceService.getBalanceById(client.getId());
             return  clientBalance.getBalance();
         }else {
-            return lastTransactionAmount;
+            return clientTransactionRecord.getRemindBalance();
         }
 
     }

@@ -1,5 +1,6 @@
 package com.guusto.restapi.controller;
 
+import com.guusto.restapi.modal.Client;
 import com.guusto.restapi.modal.ClientTranaction;
 import com.guusto.restapi.modal.Gift;
 import com.guusto.restapi.modal.Purchase;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/api/v1/guusto-service")
@@ -19,11 +22,11 @@ public class GiftcardController {
     @Autowired
     GiftPurchaseValidationService giftPurchaseValidationService;
 
-    @Autowired
-    ClientGiftTransactionService clientGiftTransactionService;
-
     //@Autowired
-    //ClientGiftTransactionServiceV2 clientGiftTransactionService;
+    //ClientGiftTransactionService clientGiftTransactionService;
+
+    @Autowired
+    ClientGiftTransactionServiceV2 clientGiftTransactionService;
 
     @PostMapping("/buy-gift")
     public ResponseEntity<Gift> buyGift(@RequestBody Gift gift) {
