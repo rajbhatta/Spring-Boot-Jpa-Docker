@@ -1,6 +1,6 @@
-package com.guusto.restapi.repository;
+package com.test.restapi.repository;
 
-import com.guusto.restapi.modal.Client;
+import com.test.restapi.modal.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

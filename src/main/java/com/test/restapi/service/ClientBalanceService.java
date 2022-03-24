@@ -1,9 +1,8 @@
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.ClientBalanceException;
-import com.guusto.restapi.modal.Client;
-import com.guusto.restapi.modal.ClientBalance;
-import com.guusto.restapi.repository.ClientBalanceRepository;
+import com.test.restapi.exception.ClientBalanceException;
+import com.test.restapi.modal.ClientBalance;
+import com.test.restapi.repository.ClientBalanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

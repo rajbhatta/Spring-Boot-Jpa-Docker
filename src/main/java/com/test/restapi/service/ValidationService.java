@@ -1,6 +1,6 @@
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.ClientBalanceException;
+import com.test.restapi.exception.ClientBalanceException;
 
 /**
  *

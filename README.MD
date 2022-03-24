@@ -17,7 +17,7 @@
 # 5. Source code details #
 ## 5.1 Source code for API server ##
 ```java
-package com.guusto.restapi;
+package com.test.restapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,40 +34,42 @@ public class RestapiApplication {
 ```
 
 ```java
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.ClientBalanceException;
+import ClientBalanceException;
 
 /**
  *
  * @param <T> generic object
  *  Validate balance and balance with quantity
  */
-public interface ValidationService<T,U> {
+public interface ValidationService<T, U> {
     public boolean checkBalance(T t, U u) throws ClientBalanceException;
+
     public boolean checkBalanceWithQuantity(T t, U u) throws ClientBalanceException;
+
     public boolean checkBalanceWithAmount(double totalBalance, double purchaseAmount);
 }
 
 ```
 
 ```java
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.GiftCardException;
+import GiftCardException;
 
 public interface GiftService<T> {
-   public void processGiftTransaction(T t) throws GiftCardException;
+    public void processGiftTransaction(T t) throws GiftCardException;
 }
 
 ```
 
 ```java
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.ClientException;
-import com.guusto.restapi.modal.Client;
-import com.guusto.restapi.repository.ClientRepository;
+import ClientException;
+import Client;
+import ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -81,30 +83,31 @@ public class ClientService {
     @Autowired
     ClientRepository clientRepository;
 
-    public List<Client> get(){
+    public List<Client> get() {
         List<Client> clientsList = new ArrayList<Client>();
         clientRepository.findAll().forEach(client -> clientsList.add(client));
         return clientsList;
     }
 
     public Client getClientById(int clientId) throws ClientException {
-        Optional<Client> clientOptional= clientRepository.findById(clientId);
-        if (clientOptional.isPresent()){
+        Optional<Client> clientOptional = clientRepository.findById(clientId);
+        if (clientOptional.isPresent()) {
             return clientOptional.get();
         }
-        throw new ClientException("UNABLE TO GET CLIENT BY ["+clientId+"]");
+        throw new ClientException("UNABLE TO GET CLIENT BY [" + clientId + "]");
     }
 
 }
 ```
 
 ```java
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.ClientBalanceException;
-import com.guusto.restapi.modal.ClientBalance;
-import com.guusto.restapi.modal.Gift;
-import com.guusto.restapi.modal.Purchase;
+import ClientBalanceException;
+import ClientBalance;
+import Purchase;
+import com.test.restapi.service.ClientBalanceService;
+import com.test.restapi.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -156,15 +159,18 @@ public class GiftPurchaseValidationService implements ValidationService<Purchase
 ```
 
 ```java
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.ClientBalanceException;
-import com.guusto.restapi.exception.ClientException;
-import com.guusto.restapi.exception.GiftCardException;
-import com.guusto.restapi.modal.*;
-import com.guusto.restapi.repository.ClientTransactionRepository;
+import ClientBalanceException;
+import ClientException;
+import GiftCardException;
+import com.test.restapi.modal.*;
+import com.test.restapi.repository.ClientTransactionRepository;
+import com.test.restapi.service.ClientBalanceService;
+import com.test.restapi.service.ClientService;
+import com.test.restapi.service.GiftPurchaseValidationService;
+import com.test.restapi.service.GiftService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -235,7 +241,7 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
             if (giftPurchaseValidationService.checkBalanceWithAmount(clientBalance, purchase.getAmount() * purchase.getQuantity())) {
                 double remindBalance = clientBalance - purchase.getQuantity() * purchase.getAmount();
                 ClientTranaction clientTransaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client);
-                mapClient.put("transaction"+transactionCounter, new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client));
+                mapClient.put("transaction" + transactionCounter, new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client));
                 writeTransactionLedger(clientTransaction);
             }
         } else {
@@ -243,7 +249,7 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
             //validate balance
             if (giftPurchaseValidationService.checkBalanceWithAmount(remindBalance, purchase.getAmount() * purchase.getQuantity())) {
                 ClientTranaction clientTransaction = new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client);
-                mapClient.put("transaction"+transactionCounter, new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client));
+                mapClient.put("transaction" + transactionCounter, new ClientTranaction(purchase.getQuantity(), purchase.getAmount(), remindBalance, purchase.getQuantity(), client));
                 writeTransactionLedger(clientTransaction);
             }
         }
@@ -260,11 +266,11 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
         return null;
     }
 
-    public ClientTranaction getLastTransactionRecordByClient(Client client){
+    public ClientTranaction getLastTransactionRecordByClient(Client client) {
         List<ClientTranaction> clientTransactionsList = clientTransactionRepository.findByClient(client);
-        if (clientTransactionsList.size() >=1){
+        if (clientTransactionsList.size() >= 1) {
             //Last record contains the latest transaction value
-            return clientTransactionsList.get(clientTransactionsList.size()-1);
+            return clientTransactionsList.get(clientTransactionsList.size() - 1);
         }
         return null;
     }
@@ -274,11 +280,11 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
         //If previous transaction is detected then get value from transaction table.
         ClientTranaction clientTransactionRecord = getLastTransactionRecordByClient(client);
 
-        if (clientTransactionRecord == null){
+        if (clientTransactionRecord == null) {
             //If no transaction then return from client balance table
-            ClientBalance clientBalance =  clientBalanceService.getBalanceById(client.getId());
-            return  clientBalance.getBalance();
-        }else {
+            ClientBalance clientBalance = clientBalanceService.getBalanceById(client.getId());
+            return clientBalance.getBalance();
+        } else {
             return clientTransactionRecord.getRemindBalance();
         }
 
@@ -289,7 +295,7 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
         return clientTranaction.getClientTransactionId();
     }
 
-    private void writeTransactionLedgerBatch(HashMap<String, ClientTranaction> linkedHashMap){
+    private void writeTransactionLedgerBatch(HashMap<String, ClientTranaction> linkedHashMap) {
         for (var entry : linkedHashMap.entrySet()) {
             ClientTranaction clientTranaction = entry.getValue();
             clientTransactionRepository.save(clientTranaction);
@@ -300,13 +306,17 @@ public class ClientGiftTransactionServiceV2 implements GiftService<Gift> {
 ```
 
 ```java
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.ClientBalanceException;
-import com.guusto.restapi.exception.ClientException;
-import com.guusto.restapi.exception.GiftCardException;
-import com.guusto.restapi.modal.*;
-import com.guusto.restapi.repository.ClientTransactionRepository;
+import ClientBalanceException;
+import ClientException;
+import GiftCardException;
+import com.test.restapi.modal.*;
+import com.test.restapi.repository.ClientTransactionRepository;
+import com.test.restapi.service.ClientBalanceService;
+import com.test.restapi.service.ClientService;
+import com.test.restapi.service.GiftPurchaseValidationService;
+import com.test.restapi.service.GiftService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -332,7 +342,7 @@ public class ClientGiftTransactionService implements GiftService<Gift> {
 
     @Override
     public void processGiftTransaction(Gift gift) throws GiftCardException {
-        try{
+        try {
             gift.getTotalPurchase().stream().forEach((purchase) -> {
                 try {
                     processPurchase(purchase, gift);
@@ -340,8 +350,8 @@ public class ClientGiftTransactionService implements GiftService<Gift> {
                     e.printStackTrace();
                 }
             });
-        }catch (Exception ex){
-            throw new GiftCardException("UNABLE TO PROCESS GIFT CARD FOR ["+gift.getClientId()+"]");
+        } catch (Exception ex) {
+            throw new GiftCardException("UNABLE TO PROCESS GIFT CARD FOR [" + gift.getClientId() + "]");
         }
 
     }
@@ -392,12 +402,11 @@ public class ClientGiftTransactionService implements GiftService<Gift> {
 ```
 
 ```java
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.ClientBalanceException;
-import com.guusto.restapi.modal.Client;
-import com.guusto.restapi.modal.ClientBalance;
-import com.guusto.restapi.repository.ClientBalanceRepository;
+import ClientBalanceException;
+import ClientBalance;
+import ClientBalanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -411,27 +420,27 @@ public class ClientBalanceService {
     @Autowired
     ClientBalanceRepository clientBalanceRepository;
 
-    public List<ClientBalance> get(){
+    public List<ClientBalance> get() {
         List<ClientBalance> clientBalanceList = new ArrayList<ClientBalance>();
         clientBalanceRepository.findAll().forEach(clientBalance -> clientBalanceList.add(clientBalance));
         return clientBalanceList;
     }
 
     public ClientBalance getBalanceById(int clientId) throws ClientBalanceException {
-        Optional<ClientBalance> clientOptional= clientBalanceRepository.findById(clientId);
-        if (clientOptional.isPresent()){
+        Optional<ClientBalance> clientOptional = clientBalanceRepository.findById(clientId);
+        if (clientOptional.isPresent()) {
             return clientOptional.get();
         }
-       throw new ClientBalanceException("UNABLE TO GET BALANCE ID for ["+clientId+"]");
+        throw new ClientBalanceException("UNABLE TO GET BALANCE ID for [" + clientId + "]");
     }
 
 }
 ```
 
 ```java
-package com.guusto.restapi.repository;
+package com.test.restapi.repository;
 
-import com.guusto.restapi.modal.ClientBalance;
+import ClientBalance;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -441,9 +450,9 @@ public interface ClientBalanceRepository extends JpaRepository<ClientBalance, In
 ```
 
 ```java
-package com.guusto.restapi.repository;
+package com.test.restapi.repository;
 
-import com.guusto.restapi.modal.Client;
+import Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -454,13 +463,11 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
 ```
 
 ```java
-package com.guusto.restapi.repository;
+package com.test.restapi.repository;
 
-import com.guusto.restapi.modal.Client;
-import com.guusto.restapi.modal.ClientTranaction;
+import Client;
+import ClientTranaction;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -474,7 +481,7 @@ public interface ClientTransactionRepository extends JpaRepository<ClientTranact
 ```
 
 ```java
-package com.guusto.restapi.modal;
+package com.test.restapi.modal;
 
 import javax.persistence.*;
 
@@ -528,9 +535,10 @@ public class Client {
 ```
 
 ```java
-package com.guusto.restapi.modal;
+package com.test.restapi.modal;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.test.restapi.modal.Client;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -578,16 +586,15 @@ public class ClientBalance implements Serializable {
 ```
 
 ```java
-package com.guusto.restapi.modal;
+package com.test.restapi.modal;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.test.restapi.modal.Client;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
 
 @Entity
 @Table(name = "tbl_client_transaction")
@@ -600,13 +607,13 @@ public class ClientTranaction implements Serializable {
     @Column(name = "quantity")
     private int quantity;
 
-    @Column(name="amount")
+    @Column(name = "amount")
     private double amount;
 
-    @Column(name="remindBalance")
+    @Column(name = "remindBalance")
     private double remindBalance;
 
-    @Column(name="gift")
+    @Column(name = "gift")
     private int gift;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -614,7 +621,7 @@ public class ClientTranaction implements Serializable {
     @JoinColumn(name = "id", nullable = false)
     private Client client;
 
-    @Column(name="created_at",nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private Date createdAt;
 
@@ -689,19 +696,20 @@ public class ClientTranaction implements Serializable {
 ```
 
 ```java
-package com.guusto.restapi.modal;
+package com.test.restapi.modal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.test.restapi.modal.Purchase;
 
 import java.io.Serializable;
 import java.util.List;
 
 public class Gift implements Serializable {
 
-    @JsonProperty(value="client_id")
+    @JsonProperty(value = "client_id")
     private int clientId;
 
-    @JsonProperty(value="purchase")
+    @JsonProperty(value = "purchase")
     private List<Purchase> totalPurchase;
 
     public int getClientId() {
@@ -723,7 +731,7 @@ public class Gift implements Serializable {
 ```
 
 ```java
-package com.guusto.restapi.modal;
+package com.test.restapi.modal;
 
 import java.io.Serializable;
 
@@ -750,7 +758,7 @@ public class Purchase implements Serializable {
 ```
 
 ```java
-package com.guusto.restapi.exception;
+package com.test.restapi.exception;
 
 public class ClientBalanceException extends Exception{
     public ClientBalanceException() {
@@ -774,8 +782,9 @@ public class ClientBalanceException extends Exception{
 }
 ```
 
-``java
-package com.guusto.restapi.exception;
+```java
+
+package com.test.restapi.exception;
 
 public class GiftCardException extends Exception{
     public GiftCardException() {
@@ -800,7 +809,7 @@ public class GiftCardException extends Exception{
 ```
 
 ```java
-package com.guusto.restapi.exception;
+package com.test.restapi.exception;
 
 public class ClientException extends Exception{
     public ClientException() {
@@ -825,25 +834,19 @@ public class ClientException extends Exception{
 ```
 
 ```java
-package com.guusto.restapi.controller;
+package com.test.restapi.controller;
 
-import com.guusto.restapi.modal.Client;
-import com.guusto.restapi.modal.ClientTranaction;
-import com.guusto.restapi.modal.Gift;
-import com.guusto.restapi.modal.Purchase;
-import com.guusto.restapi.service.ClientGiftTransactionService;
-import com.guusto.restapi.service.ClientGiftTransactionServiceV2;
-import com.guusto.restapi.service.GiftPurchaseValidationService;
+import Gift;
+import ClientGiftTransactionServiceV2;
+import GiftPurchaseValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
-@RequestMapping("/api/v1/guusto-service")
+@RequestMapping("/api/v1/api-service")
 public class GiftcardController {
 
     @Autowired
@@ -860,7 +863,7 @@ public class GiftcardController {
         try {
             clientGiftTransactionService.processGiftTransaction(gift);
             return new ResponseEntity<>(gift, HttpStatus.OK);
-        }catch (Exception ee){
+        } catch (Exception ee) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -870,12 +873,11 @@ public class GiftcardController {
 ```
 
 ```java
-package com.guusto.restapi.controller;
+package com.test.restapi.controller;
 
-import com.guusto.restapi.exception.ClientException;
-import com.guusto.restapi.modal.Client;
-import com.guusto.restapi.repository.ClientRepository;
-import com.guusto.restapi.service.ClientService;
+import ClientException;
+import Client;
+import ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -885,15 +887,15 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
-@RequestMapping("/api/v1/guusto-service")
+@RequestMapping("/api/v1/test-service")
 public class ClientController {
 
     @Autowired
     ClientService clientService;
 
     @GetMapping("/clients")
-    public ResponseEntity<List<Client>> getClients(){
-        if(clientService.get() == null){
+    public ResponseEntity<List<Client>> getClients() {
+        if (clientService.get() == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(clientService.get(), HttpStatus.OK);
@@ -913,7 +915,7 @@ public class ClientController {
 
 ```java
 
-spring.datasource.url= jdbc:mysql://localhost:3306/guusto_db?useSSL=false
+spring.datasource.url= jdbc:mysql://localhost:3306/test_db?useSSL=false
 spring.datasource.username= root
 spring.datasource.password=
 spring.jpa.properties.hibernate.dialect= org.hibernate.dialect.MySQL5InnoDBDialect

@@ -1,12 +1,12 @@
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.ClientBalanceException;
-import com.guusto.restapi.exception.ClientException;
-import com.guusto.restapi.exception.GiftCardException;
+import com.test.restapi.exception.ClientBalanceException;
+import com.test.restapi.exception.ClientException;
+import com.test.restapi.exception.GiftCardException;
 import com.guusto.restapi.modal.*;
-import com.guusto.restapi.repository.ClientTransactionRepository;
+import com.test.restapi.repository.ClientTransactionRepository;
+import com.test.restapi.modal.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

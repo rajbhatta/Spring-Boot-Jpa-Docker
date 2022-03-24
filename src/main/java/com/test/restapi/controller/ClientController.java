@@ -1,9 +1,8 @@
-package com.guusto.restapi.controller;
+package com.test.restapi.controller;
 
-import com.guusto.restapi.exception.ClientException;
-import com.guusto.restapi.modal.Client;
-import com.guusto.restapi.repository.ClientRepository;
-import com.guusto.restapi.service.ClientService;
+import com.test.restapi.exception.ClientException;
+import com.test.restapi.modal.Client;
+import com.test.restapi.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

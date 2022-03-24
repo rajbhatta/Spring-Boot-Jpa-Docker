@@ -1,4 +1,4 @@
-package com.guusto.restapi.modal;
+package com.test.restapi.modal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

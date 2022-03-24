@@ -1,4 +1,4 @@
-package com.guusto.restapi.exception;
+package com.test.restapi.exception;
 
 public class GiftCardException extends Exception{
     public GiftCardException() {

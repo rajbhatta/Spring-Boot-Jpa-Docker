@@ -1,18 +1,12 @@
-package com.guusto.restapi.controller;
+package com.test.restapi.controller;
 
-import com.guusto.restapi.modal.Client;
-import com.guusto.restapi.modal.ClientTranaction;
-import com.guusto.restapi.modal.Gift;
-import com.guusto.restapi.modal.Purchase;
-import com.guusto.restapi.service.ClientGiftTransactionService;
-import com.guusto.restapi.service.ClientGiftTransactionServiceV2;
-import com.guusto.restapi.service.GiftPurchaseValidationService;
+import com.test.restapi.modal.Gift;
+import com.test.restapi.service.ClientGiftTransactionServiceV2;
+import com.test.restapi.service.GiftPurchaseValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController

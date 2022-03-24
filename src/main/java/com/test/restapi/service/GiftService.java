@@ -1,6 +1,6 @@
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.GiftCardException;
+import com.test.restapi.exception.GiftCardException;
 
 public interface GiftService<T> {
    public void processGiftTransaction(T t) throws GiftCardException;

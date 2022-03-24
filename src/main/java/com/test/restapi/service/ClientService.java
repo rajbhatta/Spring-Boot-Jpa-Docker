@@ -1,8 +1,8 @@
-package com.guusto.restapi.service;
+package com.test.restapi.service;
 
-import com.guusto.restapi.exception.ClientException;
-import com.guusto.restapi.modal.Client;
-import com.guusto.restapi.repository.ClientRepository;
+import com.test.restapi.exception.ClientException;
+import com.test.restapi.modal.Client;
+import com.test.restapi.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
